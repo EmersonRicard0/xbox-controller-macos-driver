@@ -1,0 +1,58 @@
+name: Build Xbox Controller App
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build macOS App
+    runs-on: macos-14
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Select Xcode version
+      run: sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
+    
+    - name: Show Xcode version
+      run: xcodebuild -version
+    
+    - name: Build project
+      run: |
+        cd XboxControllerApp
+        xcodebuild \
+          -project XboxControllerApp.xcodeproj \
+          -scheme XboxControllerApp \
+          -configuration Release \
+          -derivedDataPath build \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
+    
+    - name: Create DMG
+      run: |
+        cd XboxControllerApp/build/Build/Products/Release
+        hdiutil create -volname "Xbox Controller App" \
+          -srcfolder . \
+          -ov -format UDZO \
+          XboxControllerApp.dmg
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: XboxControllerApp-macOS
+        path: XboxControllerApp/build/Build/Products/Release/XboxControllerApp.app
+        retention-days: 30
+    
+    - name: Upload DMG
+      uses: actions/upload-artifact@v4
+      with:
+        name: XboxControllerApp-DMG
+        path: XboxControllerApp/build/Build/Products/Release/*.dmg
+        retention-days: 30
+        if-no-files-found: ignore
