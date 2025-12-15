@@ -1,0 +1,44 @@
+name: Build Xbox Controller App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build
+      run: |
+        sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
+        xcodebuild -version
+        xcodebuild -project XboxControllerApp.xcodeproj -scheme XboxControllerApp -configuration Release -derivedDataPath build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+    
+    - name: Upload App
+      uses: actions/upload-artifact@v4
+      with:
+        name: XboxControllerApp
+        path: build/Build/Products/Release/XboxControllerApp.app
+```
+
+**Commit!**
+
+---
+
+## ✅ Este workflow vai:
+
+1. Usar o caminho CORRETO: `XboxControllerApp.xcodeproj` (raiz)
+2. Build o projeto
+3. Upload do `.app`
+
+---
+
+## 🚨 IMPORTANTE:
+
+**Antes de commitar**, você PRECISA ter criado o `.gitattributes` na raiz com:
+```
+* binary
