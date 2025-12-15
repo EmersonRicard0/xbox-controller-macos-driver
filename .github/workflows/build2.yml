@@ -24,10 +24,8 @@ jobs:
     
     - name: Build project
       run: |
-        cd XboxControllerApp
-        xcodebuild \xcodebuild \
+        xcodebuild \
           -project XboxControllerApp/XboxControllerApp.xcodeproj \
-          -project XboxControllerApp.xcodeproj \
           -scheme XboxControllerApp \
           -configuration Release \
           -derivedDataPath build \
